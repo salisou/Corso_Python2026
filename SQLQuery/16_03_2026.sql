@@ -82,7 +82,7 @@ CREATE TABLE Iscrizione
     -- Vincoli di integrità referenziale
     FOREIGN KEY (StudenteId) REFERENCES Studente(StudenteId),
     FOREIGN KEY (CorsoId) REFERENCES Corso(CorsoId)
-);
+);<
 
 
 -- =========================================================
@@ -123,7 +123,7 @@ VALUES
 -- =========================================================
 -- 📌 9. INSERIMENTO ISCRIZIONI
 -- =========================================================
-INSERT INTO Iscrizione (StudenteId, CorsoId, DtatIscrizione)
+INSERT INTO Iscrizione (StudenteId, CorsoId, Dat)
 VALUES
 (1, 1, '2024-01-10'),
 (1, 2, '2024-01-12'),
