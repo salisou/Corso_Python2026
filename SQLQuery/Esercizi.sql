@@ -53,7 +53,7 @@ Mostrare le informazione complete di un esame, includendo
 	voto e data 
 */
 --======================================================
-SELECT DISTINCT -- Distinct ci permette di rimuovere dupplicati
+SELECT DISTINCT -- Distinct ci permette di rimuovere i dupplicati
 	s.Nome + ' ' + s.Cognome AS Studente,
 	s.CodiceFiscale,
 	dc.Nome + ' ' + dc.Cognome AS Docente,
