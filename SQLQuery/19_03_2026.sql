@@ -37,45 +37,83 @@ SELECT Count(*) AS NRigheEsame From Esame
 SELECT Count(*) AS NRigheIscrizione From Iscrizione
 SELECT Count(*) AS NRigheCorso From Corso
 SELECT Count(*) AS NRigheDocente From Docente
+
+--========= NUMERO STUDENTI PER CORSO
+
+SELECT 
+    s.Nome AS Studente,
+    c.NomeCorso,
+    COUNT(e.StudenteId) AS NumeroStudenti
+FROM Esame e
+JOIN Corso c ON c.CorsoId = e.CorsoId
+JOIN Studente s ON e.CorsoId = e.StudenteId
+GROUP BY s.Nome, c.NomeCorso;
+
+
 --====================================================
 
 --=====================MIN============================
+SELECT 
+    c.NomeCorso AS [nome del Corsp],
+    MIN(e.Voto) AS VotoMinmo
+FROM Esame e
+join Corso c On c.CorsoId = e.CorsoId
+GROUP BY c.NomeCorso
+ORDER BY VotoMinmo
 --====================================================
 
 --=====================MAX============================
+SELECT 
+    c.NomeCorso AS [nome del Corsp],
+    MAX(e.Voto) AS VotoMassimo
+FROM Esame e
+join Corso c On c.CorsoId = e.CorsoId
+GROUP BY c.NomeCorso
+ORDER BY VotoMassimo
 --====================================================
 
 --=====================SUM============================
+--====== Restituire: Somma dei voti per corso
+SELECT 
+    c.NomeCorso AS [nome del Corsp],
+    SUM(e.Voto) AS SommaVoto
+FROM Esame e
+join Corso c On c.CorsoId = e.CorsoId
+GROUP BY c.SommaVoto
 
+--==================Having=============================
+--=== Corsi con media > 25
+SELECT 
+    c.NomeCorso AS [nome del Corsp],
+    AVG(e.Voto) AS Media
+FROM Esame e
+join Corso c On c.CorsoId = e.CorsoId
+GROUP BY c.NomeCorso
+HAVING AVG(e.Voto) > 25
+
+
+--=====================================================
+-- RESTITUIRE LA LISTA DEGLI STUDENTI CONTANDO:
+    -- 1 NUMERO TOTALE DEGLI STUDENTI
+    -- 2 MEDIA
+    -- 3 IL VOTO MASSIMO
+    -- 4 IL VOTO MINIMO
+    -- 5 IL TOTALE DEI VOTI
+
+
+SELECT 
+   c.NomeCorso,
+   COUNT(*) as STUDENTI,
+   AVG(e.Voto) as MEDIA,
+   MAX(e.Voto) as MASSIMO,
+   MIN(e.Voto) as MINIMO,
+   SUM(e.Voto) as TotaleVoti
+FROM Esame e
+JOIN Corso c ON c.corsoid = e.corsoId
+GROUP BY C.NomeCorso
+HAVING AVG(e.Voto) >= 25
+ORDER BY MEDIA desc
 --====================================================
---====================================================
-
-
-
---====================================================
---====================================================
-
-
---====================================================
---====================================================
-
-
-
---====================================================
---====================================================
-
-
-
-
---====================================================
---====================================================
-
-
-
-
---====================================================
---====================================================
-
 
 --=============================================================
 -- Restituire la lista degli Studenti sopra la media generale
@@ -83,7 +121,7 @@ SELECT Count(*) AS NRigheDocente From Docente
 
 SELECT 
     Nome,
-    Cognome,
+    Cognome
 FROM Studente
 WHERE StudenteId IN (
     SELECT StudenteId
@@ -95,6 +133,9 @@ WHERE StudenteId IN (
 );
 
 --====================================================
+-- STORE PROCEDURE
 --====================================================
 
+EXEC sp_GetAllStudeni
 
+EXEC sp_GetStudenteById 30
