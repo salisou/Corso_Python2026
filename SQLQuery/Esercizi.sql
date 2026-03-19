@@ -44,6 +44,29 @@ left JOIN Corso c ON c.DocenteId = d.DocenteId
 Where c.DocenteId Is NULL
 
 
+--======================================================
+/*
+Mostrare le informazione complete di un esame, includendo
+	Dati dello studente
+	corso
+	docente 
+	voto e data 
+*/
+--======================================================
+SELECT DISTINCT -- Distinct ci permette di rimuovere dupplicati
+	s.Nome + ' ' + s.Cognome AS Studente,
+	s.CodiceFiscale,
+	dc.Nome + ' ' + dc.Cognome AS Docente,
+	c.NomeCorso as Corso,
+	e.Voto,
+	e.DataEsame As Data
+FROM Esame as e
+INNER JOIN Studente AS s On s.StudenteId = e.StudenteId 
+INNER JOIN Corso AS c On c.CorsoId = e.CorsoId
+INNER JOIN Docente AS dc On dc.DocenteId = c.DocenteId 
+INNER JOIN Iscrizione AS i ON i.StudenteId = s.StudenteId
+
+
 
 --======================================================
 -- ESERCIZIO 4: 
