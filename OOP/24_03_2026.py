@@ -88,7 +88,7 @@ stu1.mostra_dati()
 # stampa lo studente
 #print(stu1)
 
-# Questa vlasse gestisce più studenti
+# Questa classe gestisce più studenti
 class RegistroStudenti:
     def __init__(self):
         self._ListaStudenti = []
@@ -117,11 +117,8 @@ class RegistroStudenti:
         for stu in self._ListaStudenti:
             if stu._email == email:
                 self._ListaStudenti.remove(stu)
-                return True
-            return False
-    
-    
-
+                return stu
+        return False
 
 # Creare un registro
 registro = RegistroStudenti()
@@ -133,6 +130,7 @@ studente3 = Studente("Pietro", "Cammise", "pietro@gmail.com", "1970-01-01", "BIP
 studente4 = Studente("Walid", "boussad", "walid@gmail.com","01/11/2000", "BSSWLD00M12H501X")
 studente5 = Studente("Pierfrancesco","melle","pier26@gmail.com","26/07/2000","mllpfr993467126g")
 studente6 = Studente("Cosimo", "Pastore", "cos.past@gmail.com", "07-03-1987", "CSMHJKERW45687F4")
+studente7 = Studente("Yassin", "Al Mobaslat", "yassin.al@gmail.com", "18-04-1995", "HASG374GSDYJH23K")
 
 # Aggiungere nel registro
 registro.aggiungi_studente(studente1)
@@ -141,19 +139,35 @@ registro.aggiungi_studente(studente3)
 registro.aggiungi_studente(studente4)
 registro.aggiungi_studente(studente5)
 registro.aggiungi_studente(studente6)
+registro.aggiungi_studente(studente7)
 
 # Mostrare tutti i deti degli studenti 
 registro.mostra_studenti()
-
+print("=======================Cerca studente per mail ============================\n")
 # Cercare lo studente per email
 
-studente = registro.cerca_per_email("federica@mail.com")
-
+studente = registro.cerca_per_email("carlo@caputo")
 if studente:
     print(f"\nTrovato: {studente}")
 else:
     print("Non trovato")
+print("==========================Fine=======================================\n")
+    
+print("======================Modifica Studente===================================\n")
 
-# modificare l'email
+# modificare lo studente per email e lo visualizza 
+registro.modifica_email("yassin.al@gmail.com", "holy@gmail.com")
+registro.mostra_studenti()
+print("========================Fine=========================================\n")
 
-# eliminare lo studente per mail 
+# eliminare lo studente per email e lo visualizza
+print("==================Cancella studente=========================================\n")
+
+s = registro.elimina_studente("pietro@gmail.com")
+if s:
+    print("Eliminato")
+else:
+    print("Studente non trovato")
+
+registro.mostra_studenti()
+print("===========================Fine======================================\n")
