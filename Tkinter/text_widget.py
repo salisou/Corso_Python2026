@@ -34,8 +34,14 @@ class Text_widget:
         print("Riga 2:")
         print(riga2)
 
+
+
     def cancella_testo(self):
+        # Se il Text è disabilitato, abilitalo temporaneamente
+        self.txt.config(state=tk.NORMAL)
         self.txt.delete("1.0", tk.END)
+        # Se vuoi, puoi rimetterlo in sola lettura qui
+        # self.txt.config(state=tk.DISABLED)
 
     def sola_lettura(self):
         self.txt.config(state=tk.DISABLED)
