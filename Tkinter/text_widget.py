@@ -31,7 +31,7 @@ class Text_widget:
 
         # Leggi una riga specifica (riga 2)
         riga2 = self.txt.get("2.0", "2.end")
-        print("Riga 2:")
+        print("Riga :")
         print(riga2)
 
 
