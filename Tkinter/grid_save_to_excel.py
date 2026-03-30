@@ -1,5 +1,9 @@
+# pip install openpyxl
+
 import tkinter as tk
-from tkinter import messagebox
+from openpyxl import Workbook, load_workbook
+import os 
+
 
 root = tk.Tk()
 root.title("Modulo Scolastico")
@@ -12,6 +16,7 @@ root.geometry("700x300")
     entry.insert(0, testo) inserisce il testo iniziale.
     entry.config(fg="gray") rende il testo grigio, così sembra un suggerimento.    
 """
+
 def set_placeholder(entry, testo):
     entry.insert(0, testo)
     entry.config(fg="gray")
@@ -100,16 +105,7 @@ def salva_dati():
             testo = ""
         valori.append(testo)
     
-    # Creazione del messaggio da mostrare
-    messaggio = (
-        f"Nome: {valori[0]}\n"
-        f"Cognome: {valori[1]}\n"
-        f"Email: {valori[2]}\n"
-        f"Data di nascita: {valori[3]}"
-    )
-    
-    # Mostra popup
-    messagebox.showinfo("Dati Inseriti", messaggio)
+ 
 
 # Bottone
 """
