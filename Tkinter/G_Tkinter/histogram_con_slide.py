@@ -1,107 +1,143 @@
-import tkinter as tk
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import numpy as np
+import tkinter as tk  # libreria per creare interfacce grafiche
+from matplotlib.figure import Figure  # per creare il grafico
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg  # per integrare matplotlib in tkinter
+import numpy as np  # libreria per calcoli numerici
+
+# ---------------------------------------------------------
+# Funzione che aggiorna il grafico quando muovi lo slider
+# ---------------------------------------------------------
+def update_hist(val):
+    scale_factor = scale.get()  # prende il valore corrente dello slider
+
+    # modifica i dati moltiplicandoli per il fattore dello slider
+    eta_mod = eta_utenti * scale_factor
+
+    # limita i valori tra 18 e 70 anni
+    eta_mod = np.clip(eta_mod, 18, 70)
+
+    ax.cla()  # cancella completamente il grafico precedente
+
+    # -----------------------------
+    # Creazione istogramma
+    # -----------------------------
+    counts, bins, patches = ax.hist(
+        eta_mod,              # dati da visualizzare
+        bins=30,              # numero di barre
+        alpha=0.6,            # trasparenza
+        edgecolor='white',    # colore bordo barre
+        linewidth=0.5         # spessore bordo
+    )
+
+    # -----------------------------
+    # Effetto gradiente sulle barre
+    # -----------------------------
+    for i, p in enumerate(patches):  # cicla tutte le barre
+        color_intensity = i / len(patches)  # crea variazione colore
+       
+        # assegna colore RGBA (rosso, verde, blu, alpha)
+        p.set_facecolor((0.2, 0.6, 1.0, 0.3 + 0.7 * color_intensity))
+
+    # -----------------------------
+    # Curva distribuzione (tipo gaussiana)
+    # -----------------------------
+    x = np.linspace(min(eta_mod), max(eta_mod), 200)  # crea asse X continuo
+    mean = np.mean(eta_mod)  # calcola media
+    std = np.std(eta_mod)    # calcola deviazione standard
+
+    # formula distribuzione normale (gaussiana)
+    y = (1/(std*np.sqrt(2*np.pi))) * np.exp(-0.5*((x-mean)/std)**2)
+
+    # scala la curva per adattarla all’istogramma
+    y = y * len(eta_mod) * (bins[1] - bins[0])
+
+    # disegna la curva sopra l’istogramma
+    ax.plot(x, y, color='#00f5d4', linewidth=2.5, label='Distribuzione')
+
+    # -----------------------------
+    # Linee statistiche
+    # -----------------------------
+    ax.axvline(mean, color='#ff4d6d', linestyle='--', linewidth=2,
+               label=f'Media: {mean:.1f}')  # linea media
+
+    ax.axvline(mean + std, color='#ffd166', linestyle=':', linewidth=2)  # +1 deviazione
+    ax.axvline(mean - std, color='#ffd166', linestyle=':', linewidth=2)  # -1 deviazione
+
+    # -----------------------------
+    # Stile grafico moderno
+    # -----------------------------
+    ax.set_facecolor("#0f172a")  # sfondo area grafico
+    fig.patch.set_facecolor("#0f172a")  # sfondo figura
+
+    ax.set_title('Distribuzione Età Utenti', fontsize=18, color='white', pad=20)
+    ax.set_xlabel('Età', color='white')
+    ax.set_ylabel('Frequenza', color='white')
+
+    ax.tick_params(colors='white')  # colore numeri assi
+
+    ax.grid(alpha=0.2, linestyle='--', color='white')  # griglia
+
+    # rimuove bordi classici
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+
+    # legenda
+    ax.legend(facecolor="#0f172a", edgecolor="white", labelcolor='white')
+
+    canvas.draw()  # aggiorna il grafico a schermo
 
 # -----------------------------
-# Configurazione finestra Tkinter
+# Creazione finestra principale
 # -----------------------------
-root = tk.Tk()
-root.title("Istogramma - Distribuzione Età Utenti")  # titolo finestra
-root.geometry("1000x700")                            # dimensioni finestra
-root.configure(bg="#1e1e2f")                       # colore sfondo della finestra
+root = tk.Tk()  # crea finestra
+root.title("Istogramma -  Distribuzione Età Utenti")  # titolo
+root.geometry("1000x800")  # dimensioni
+root.configure(bg="#0f172a")  # sfondo scuro
 
 # -----------------------------
-# Generazione dati di esempio
+# Generazione dati
 # -----------------------------
 np.random.seed(42)  # per riproducibilitdà dei dati
 
 # Genera età utenti secondo distribuzione normale con media=35 e dev. std=12
 eta_utenti = np.random.normal(loc=35, scale=12, size=1000)
 
-# Limita le età tra 18 e 70 anni
+# limita i valori tra 18 e 70
 eta_utenti = np.clip(eta_utenti, 18, 70)
+
 
 # -----------------------------
 # Creazione figura Matplotlib
 # -----------------------------
 # figsize = dimensioni, dpi = risoluzione, facecolor = colore sfondo figura
-fig = Figure(figsize=(10, 6), dpi=100, facecolor="#1e1e2f")  
+fig = Figure(figsize=(10, 6), dpi=100)  # crea figura
 
 # aggiunge un subplot all'interno della figura, con sfondo scuro per l'area grafico
-ax = fig.add_subplot(111, facecolor="#2a2a3d")  
+ax = fig.add_subplot(111)  # crea area grafico
+
+# inserisce il grafico dentro Tkinter
+canvas = FigureCanvasTkAgg(fig, master=root)
+canvas.draw()
+canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
 
 # -----------------------------
-# Creazione istogramma
+# Slider interattivo
 # -----------------------------
-# bins = numero di barre, alpha = trasparenza, linewidth = spessore bordo a barra
-n, bins, patches = ax.hist(
-    eta_utenti,
-    bins=30,
-    color='#8b5cf6',      # colore barra
-    edgecolor='#6d28d9',  # colore bordo barra
-    alpha=0.8,
-    linewidth=1.5
-)
+scale = tk.Scale(root,
+                 from_=0.5, to=2.0,   # range valori
+                 resolution=0.01,     # precisione
+                 orient='horizontal', # orizzontale
+                 length=400,          # lunghezza
+                 label='Animazione',  # etichetta
+                 bg="#0f172a",
+                 fg="white",
+                 troughcolor="#1e293b",
+                 command=update_hist)  # funzione chiamata quando si muove
 
-# -----------------------------
-# Linea della media
-# -----------------------------
-media = np.mean(eta_utenti)  # calcola la media delle età
-ax.axvline(media, color='#ef4444', linestyle='--', linewidth=2.5,
-           label=f'Media: {media:.1f} anni')  # linea verticale per la media
+scale.set(1.0)  # valore iniziale
+scale.pack(pady=20)  # posizionamento
 
-# -----------------------------
-# Linee deviazione standard
-# -----------------------------
-std_dev = np.std(eta_utenti)  # calcola la deviazione standard
-# Linea +1 std
-ax.axvline(media + std_dev, color='#facc15', linestyle=':', linewidth=2,
-           label=f'+1 Std: {media + std_dev:.1f}')
-# Linea -1 std
-ax.axvline(media - std_dev, color='#facc15', linestyle=':', linewidth=2,
-           label=f'-1 Std: {media - std_dev:.1f}')
+# prima esecuzione del grafico
+update_hist(1.0)
 
-# -----------------------------
-# Personalizzazione grafico moderno
-# -----------------------------
-ax.set_title('Distribuzione Età Utenti', fontsize=20, fontweight='bold', pad=20, color='white')
-
-ax.set_xlabel('Età (anni)', fontsize=14, fontweight='bold', color='white')
-
-ax.set_ylabel('Frequenza', fontsize=14, fontweight='bold', color='white')
-
-ax.tick_params(colors='white')  # colori dei numeri assi
-
-# Legenda con sfondo scuro
-ax.legend(fontsize=12, facecolor="#2a2a3d", edgecolor="white")
-
-# Griglia tratteggiata bianca trasparente
-ax.grid(alpha=0.3, linestyle='--', color='white')
-
-# -----------------------------
-# Statistiche aggiuntive con descrizione
-# -----------------------------
-# Mostra informazioni e descrizione all'interno del grafico
-stats_text = (f'Questo grafico mostra la distribuzione delle età di 1000 utenti.\n'
-              f'N = {len(eta_utenti)}\nMedia = {media:.1f}\nDeviazione Std = {std_dev:.1f}')
-
-ax.text(0.02, 0.95, stats_text,
-        transform=ax.transAxes,  # posizione relativa all'area grafico
-        fontsize=11,
-        verticalalignment='top',
-        color='white',
-        bbox=dict(boxstyle='round', facecolor='#3a3a5c', alpha=0.8))  # box sfondo
-
-# Ottimizza layout
-fig.tight_layout()
-
-# -----------------------------
-# Incorpora grafico in Tkinter
-# -----------------------------
-canvas = FigureCanvasTkAgg(fig, master=root)  # crea canvas Tkinter per matplotlib
-canvas.draw()                                 # disegna il grafico
-canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True, padx=20, pady=20)  # mostra il canvas
-
-# Avvia finestra Tkinter
+# avvia il programma
 root.mainloop()
